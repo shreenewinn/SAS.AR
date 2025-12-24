@@ -10,6 +10,9 @@
       /* CSS */
       body { margin: 0; overflow: hidden; font-family: sans-serif; background: black; }
       
+      /* FORCE HIDE VR BUTTON (The Fix) */
+      .a-enter-vr { display: none !important; }
+
       #start-screen {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.9); z-index: 9999;
@@ -97,8 +100,6 @@
       target.addEventListener("targetLost", event => {
         console.log("Poster Lost");
         video.pause();
-        // Optional: Hide video when lost
-        // plane.setAttribute("opacity", "0"); 
       });
     </script>
   </body>
