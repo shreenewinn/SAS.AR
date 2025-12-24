@@ -7,42 +7,55 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
-      /* This CSS makes the "Start" button look professional */
-      body { margin: 0; overflow: hidden; font-family: sans-serif; }
+      /* CSS */
+      body { margin: 0; overflow: hidden; font-family: sans-serif; background: black; }
+      
       #start-screen {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.9); z-index: 9999;
         display: flex; justify-content: center; align-items: center; flex-direction: column;
       }
+      
       #start-btn {
         padding: 15px 40px; font-size: 18px; font-weight: bold;
         background: white; border: none; border-radius: 50px;
         cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
       }
+      
       .instructions { color: white; margin-top: 20px; font-size: 14px; opacity: 0.8; }
+
+      /* Hide Video Element */
+      #vid { position: absolute; opacity: 0.01; pointer-events: none; }
     </style>
   </head>
 
   <body>
+    
     <div id="start-screen">
       <button id="start-btn">BRING ART TO LIFE</button>
       <div class="instructions">Focus on the Artwork</div>
     </div>
 
+    <video 
+      id="vid" 
+      src="./video.mp4" 
+      loop 
+      muted 
+      playsinline 
+      webkit-playsinline 
+      crossorigin="anonymous">
+    </video>
+
     <a-scene 
-      mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.0001; filterBeta: 0.001;" 
+      mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.001; filterBeta: 10;" 
       color-space="sRGB" 
       renderer="colorManagement: true, physicallyCorrectLights" 
       vr-mode-ui="enabled: false" 
       device-orientation-permission-ui="enabled: false">
-
-      <a-assets>
-        <video id="vid" src="./video.mp4" crossorigin="anonymous" playsinline webkit-playsinline loop></video>
-      </a-assets>
-
+      
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity mindar-image-target="targetIndex: 0">
+      <a-entity mindar-image-target="targetIndex: 0" id="target">
         
         <a-plane 
           id="video-plane"
@@ -63,29 +76,30 @@
       const video = document.getElementById('vid');
       const plane = document.getElementById('video-plane');
       const scene = document.querySelector('a-scene');
+      const target = document.getElementById('target');
 
-      // User clicks "View Poster" -> Unlocks audio/video
+      // Start Button
       startBtn.addEventListener('click', () => {
-        startScreen.style.display = 'none'; // Hide the button
-        video.play(); // Initialize video
-        video.pause(); // Pause immediately (wait for poster)
+        startScreen.style.display = 'none';
+        video.play();
+        video.pause();
       });
 
-      // When the Poster is Found
-      scene.addEventListener("targetFound", event => {
+      // Found
+      target.addEventListener("targetFound", event => {
         console.log("Poster Found");
-        plane.setAttribute("opacity", "1"); // Make video visible
-        video.play(); // Start playing
+        plane.setAttribute("opacity", "1");
+        video.play();
+        video.muted = false;
       });
 
-      // When the Poster is Lost
-      scene.addEventListener("targetLost", event => {
+      // Lost
+      target.addEventListener("targetLost", event => {
         console.log("Poster Lost");
-        video.pause(); // Stop playing
-        // Optional: Hide video so it doesn't float in space
-        plane.setAttribute("opacity", "0"); 
+        video.pause();
+        // Optional: Hide video when lost
+        // plane.setAttribute("opacity", "0"); 
       });
     </script>
   </body>
-
 </html>
